@@ -2,6 +2,10 @@
 path = source/libs/@fortawesome/fontawesome-free
 url = git@github.com:FortAwesome/Font-Awesome.git
 
+[submodule "source/libs/@fortawesome/fontawesome-pro"]
+path = source/libs/@fortawesome/fontawesome-pro
+url = git@github.com:inkss/fontawesome.git
+
 [submodule "source/libs/@aplayer"]
 path = source/libs/@aplayer
 url = git@github.com:DIYgod/APlayer.git
