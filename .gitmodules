@@ -1,0 +1,43 @@
+[submodule "source/libs/@fortawesome/fontawesome-free"]
+path = source/libs/@fortawesome/fontawesome-free
+url = git@github.com:FortAwesome/Font-Awesome.git
+
+[submodule "source/libs/aplayer"]
+path = source/libs/aplayer
+url = git@github.com:DIYgod/APlayer.git
+
+[submodule "source/libs/flying-pages"]
+path = source/libs/flying-pages
+url = git@github.com:gijo-varghese/flying-pages.git
+
+[submodule "source/libs/github-markdown-css"]
+path = source/libs/github-markdown-css
+url = git@github.com:sindresorhus/github-markdown-css.git
+
+[submodule "source/libs/jquery"]
+path = source/libs/jquery
+url = git@github.com:jquery/jquery.git
+
+[submodule "source/libs/katex"]
+path = source/libs/katex
+url = git@github.com:KaTeX/KaTeX.git
+
+[submodule "source/libs/marked"]
+path = source/libs/marked
+url = git@github.com:markedjs/marked.git
+
+[submodule "source/libs/mathjax"]
+path = source/libs/mathjax
+url = https://github.com/mathjax/MathJax
+
+[submodule "source/libs/nprogress"]
+path = source/libs/nprogress
+url = git@github.com:rstacruz/nprogress.git
+
+[submodule "source/libs/pjax"]
+path = source/libs/pjax
+url = git@github.com:MoOx/pjax.git
+
+[submodule "source/libs/vanilla-lazyload"]
+path = source/libs/vanilla-lazyload
+url = git@github.com:verlok/vanilla-lazyload.git
