@@ -15,14 +15,14 @@
       <div class="m_search">
         <form name="searchform" class="form u-search-form">
           <input type="text" class="input u-search-input" placeholder="<%- theme.cover && theme.cover.search %>" />
-          <i class="icon fas fa-search fa-fw"></i>
+          <i class="icon fa-solid fa-search fa-fw"></i>
         </form>
       </div>
     <% } %>
     <div class='menu navigation'>
       <div class='list-h'>
         <% if (theme.cover.features) { %>
-          <% (theme.cover.features || []).forEach(function(value){ %>
+          <% getList(theme.cover.features).forEach(function(value){ %>
             <a href="<%= url_for(value.url) %>"
               <% if (value.rel) { %>
                 rel="<%- value.rel %>"

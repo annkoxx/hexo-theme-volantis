@@ -1,13 +1,12 @@
 const RightMenu = (() => {
   const
-    rightMenuConfig = volantis.THEMECONFIG.rightmenu,
-    messageRightMenu = volantis.THEMECONFIG.plugins.message.enable && volantis.THEMECONFIG.plugins.message.rightmenu.enable;
+    rightMenuConfig = volantis.GLOBAL_CONFIG.plugins.rightmenu,
+    messageRightMenu = volantis.GLOBAL_CONFIG.plugins.message.enable && volantis.GLOBAL_CONFIG.plugins.message.rightmenu.enable;
 
   const
     fn = {},
     _rightMenuWrapper = document.getElementById('rightmenu-wrapper'),
     _rightMenuContent = document.getElementById('rightmenu-content'),
-    _menuDarkBtn = document.getElementById('menuDarkBtn'),
     _printHtml = document.getElementById('printHtml'),
     _menuMusic = document.getElementById('menuMusic'),
     _readingModel = document.getElementById('readingModel'),
@@ -24,7 +23,10 @@ const RightMenu = (() => {
     _copyHref = document.querySelector('.menu-Option[data-fn-type="copyHref"]'),
     _copySrc = document.querySelector('.menu-Option[data-fn-type="copySrc"]'),
     _copyImg = document.querySelector('.menu-Option[data-fn-type="copyImg"]'),
-    _openTab = document.querySelector('.menu-Option[data-fn-type="openTab"]');
+    _openTab = document.querySelector('.menu-Option[data-fn-type="openTab"]'),
+    _backward = document.querySelector('#menuMusic .backward'),
+    _toggle = document.querySelector('#menuMusic .toggle'),
+    _forward = document.querySelector('#menuMusic .forward');
 
   const urlRegx = /^((https|http)?:\/\/)+[A-Za-z0-9]+\.[A-Za-z0-9]+[\/=\?%\-&_~`@[\]\':+!]*([^<>\"\"])*$/;
 
@@ -55,13 +57,30 @@ const RightMenu = (() => {
     }
 
     window.removeEventListener('blur', fn.hideMenu);
-    document.body.removeEventListener('click', fn.hideMenu);
-
     window.addEventListener('blur', fn.hideMenu);
+    document.body.removeEventListener('click', fn.hideMenu);
     document.body.addEventListener('click', fn.hideMenu);
+
+    if (_forward && _toggle && _forward) {
+      _backward.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        RightMenuAplayer.aplayerBackward();
+      }
+      _toggle.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        RightMenuAplayer.aplayerToggle();
+      }
+      _forward.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        RightMenuAplayer.aplayerForward();
+      }
+    }
   }
 
-  // 菜单位置设定 
+  // 菜单位置设定
   fn.popMenu = (event) => {
     let mouseClientX = event.clientX;
     let mouseClientY = event.clientY;
@@ -82,7 +101,7 @@ const RightMenu = (() => {
       _rightMenuWrapper.style.left = showLeft + "px";
       _rightMenuWrapper.style.top = showTop + "px";
       _rightMenuWrapper.style.zIndex = '2147483648';
-      if (volantis.THEMECONFIG.plugins.message.rightmenu.notice) fn.showMessage();
+      if (volantis.GLOBAL_CONFIG.plugins.message.rightmenu.notice) fn.showMessage();
     } catch (error) {
       _rightMenuWrapper.blur();
       console.error(error);
@@ -104,18 +123,18 @@ const RightMenu = (() => {
       });
   }
 
-  // 菜单项设置 
+  // 菜单项设置
   fn.setMenuItem = (event) => {
     let optionFlag = false;
     const eventTarget = event.target;
     const selectText = window.getSelection().toString();
-    DOMController.visible(_openTab, false); // 隐藏新标签页打开 
+    DOMController.visible(_openTab, false); // 隐藏新标签页打开
 
-    // 判断是否是输入框 
+    // 判断是否是输入框
     if (eventTarget.tagName.toLowerCase() === 'input' || eventTarget.tagName.toLowerCase() === 'textarea') {
       const inputStr = eventTarget.value;
 
-      // 全选 
+      // 全选
       if (inputStr.length > 0) {
         DOMController.visible(_copySelect);
         _copySelect.onclick = () => {
@@ -126,7 +145,7 @@ const RightMenu = (() => {
         DOMController.visible(_copySelect, false);
       }
 
-      // 剪切 
+      // 剪切
       if (selectText) {
         DOMController.visible(_copyCut);
         _copyCut.onclick = () => {
@@ -142,9 +161,9 @@ const RightMenu = (() => {
         DOMController.visible(_copyCut, false);
       }
 
-      // 粘贴 
+      // 粘贴
       fn.readClipboard().then(text => {
-        // 如果剪切板存在内容 
+        // 如果剪切板存在内容
         if (!!text) {
           DOMController.visible(_copyPaste);
           _copyPaste.onclick = () => {
@@ -163,7 +182,7 @@ const RightMenu = (() => {
       DOMController.visible(_copyCut, false);
     }
 
-    // 新标签打开链接 
+    // 新标签打开链接
     const eventHref = eventTarget.href;
     if (!!eventHref && urlRegx.test(eventHref)) {
       optionFlag = true;
@@ -179,7 +198,7 @@ const RightMenu = (() => {
       DOMController.visible(_copyHref, false);
     }
 
-    // 新标签打开图片 & 复制图片链接 
+    // 新标签打开图片 & 复制图片链接
     const eventSrc = eventTarget.currentSrc;
     if (!!eventSrc && urlRegx.test(eventSrc)) {
       optionFlag = true;
@@ -197,7 +216,7 @@ const RightMenu = (() => {
       DOMController.visible(_copySrc, false);
     }
 
-    // 复制图片 
+    // 复制图片
     if (!!eventSrc && urlRegx.test(eventSrc) && eventSrc.trimEnd().endsWith('.png')) {
       optionFlag = true;
       DOMController.visible(_copyImg);
@@ -217,7 +236,7 @@ const RightMenu = (() => {
       DOMController.visible(_copyImg, false);
     }
 
-    // 复制文本 
+    // 复制文本
     if (selectText) {
       optionFlag = true;
       DOMController.visible(_copyText);
@@ -235,7 +254,7 @@ const RightMenu = (() => {
       DOMController.visible(_searchWord, false);
     }
 
-    // 打印 
+    // 打印
     const _printArticle = document.querySelector('#post.article') || null;
     const pathName = window.location.pathname;
     if (!!_printArticle) {
@@ -270,10 +289,10 @@ const RightMenu = (() => {
       DOMController.visible(_readingModel, false);
     }
 
-    if (volantis.THEMECONFIG.plugins.aplayer.enable 
-      && typeof RightMenuAplayer !== 'undefined' 
+    if (volantis.GLOBAL_CONFIG.plugins.aplayer.enable
+      && typeof RightMenuAplayer !== 'undefined'
       && RightMenuAplayer.APlayer.player !== undefined) {
-      if (rightMenuConfig.music.alwaysShow) {
+      if (rightMenuConfig.music_alwaysShow) {
         DOMController.visible(_menuMusic);
       } else if (RightMenuAplayer.APlayer.status === 'play' || RightMenuAplayer.APlayer.status === 'undefined') {
         optionFlag = true;
@@ -289,18 +308,18 @@ const RightMenu = (() => {
       DOMController.visible(ele, !optionFlag);
     })
 
-    if (volantis.THEMECONFIG.plugins.aplayer.enable
-      && volantis.THEMECONFIG.rightmenu.layout.includes('music')) {
+    if (volantis.GLOBAL_CONFIG.plugins.aplayer.enable
+      && rightMenuConfig.layout.includes('music')) {
       RightMenuAplayer.checkAPlayer();
     }
   }
 
-  // 隐藏菜单 
+  // 隐藏菜单
   fn.hideMenu = () => {
     DOMController.visible(_rightMenuWrapper, false);
   }
 
-  // 复制字符串 
+  // 复制字符串
   fn.copyString = (str) => {
     VolantisApp.utilWriteClipText(str)
       .then(() => {
@@ -316,7 +335,7 @@ const RightMenu = (() => {
       })
   }
 
-  // 写入文本到剪切板 
+  // 写入文本到剪切板
   fn.writeClipText = (str) => {
     try {
       return navigator.clipboard
@@ -350,7 +369,7 @@ const RightMenu = (() => {
     }
   }
 
-  // 写入图片到剪切板 
+  // 写入图片到剪切板
   fn.writeClipImg = async function (event, success, error) {
     const eventSrc = rightMenuConfig.customPicUrl.enable ?
       event.target.currentSrc.replace(rightMenuConfig.customPicUrl.old, rightMenuConfig.customPicUrl.new) :
@@ -394,14 +413,14 @@ const RightMenu = (() => {
     }
   }
 
-  // 请求读取剪切板 
+  // 请求读取剪切板
   fn.readClipboard = async () => {
     const result = await navigator.permissions.query({
       name: 'clipboard-read'
     });
     if (result.state === 'granted' || result.state === 'prompt') {
-      // 修改为 .read()  可以获取剪切板中的文字/图片 
-      // 返回的是 ClipboardItem 
+      // 修改为 .read()  可以获取剪切板中的文字/图片
+      // 返回的是 ClipboardItem
       return navigator.clipboard
         .readText()
         .then(text => text)
@@ -410,7 +429,7 @@ const RightMenu = (() => {
     return Promise.reject(result);
   }
 
-  // 粘贴文本 
+  // 粘贴文本
   fn.insertAtCaret = (elemt, value) => {
     const startPos = elemt.selectionStart,
       endPos = elemt.selectionEnd;
@@ -434,43 +453,41 @@ const RightMenu = (() => {
     }
   }
 
-  // 执行打印页面 
+  // 执行打印页面
   fn.printHtml = () => {
     if (volantis.isReadModel) fn.readingModel();
-    if (rightMenuConfig.print.defaultStyles) {
-      DOMController.setAttribute('details', 'open', 'true');
-      DOMController.remove('.cus-article-bkg');
-      DOMController.remove('.iziToast-overlay');
-      DOMController.remove('.iziToast-wrapper');
-      DOMController.remove('.prev-next');
-      DOMController.remove('footer');
-      DOMController.remove('#l_header');
-      DOMController.remove('#l_cover');
-      DOMController.remove('#l_side');
-      DOMController.remove('#comments');
-      DOMController.remove('#s-top');
-      DOMController.remove('#BKG');
-      DOMController.remove('#rightmenu-wrapper');
-      DOMController.remove('.nav-tabs');
-      DOMController.remove('.parallax-mirror');
-      DOMController.remove('.new-meta-item.share');
-      DOMController.remove('div.footer');
-      DOMController.setStyle('body', 'backgroundColor', 'unset');
-      DOMController.setStyle('#l_main', 'width', '100%');
-      DOMController.setStyle('#post', 'boxShadow', 'none');
-      DOMController.setStyle('#post', 'background', 'none');
-      DOMController.setStyle('#post', 'padding', '0');
-      DOMController.setStyle('h1', 'textAlign', 'center');
-      DOMController.setStyle('h1', 'fontWeight', '600');
-      DOMController.setStyle('h1', 'fontSize', '2rem');
-      DOMController.setStyle('h1', 'marginBottom', '20px');
-      DOMController.setStyle('.tab-pane', 'display', 'block');
-      DOMController.setStyle('.tab-content', 'borderTop', 'none');
-      DOMController.setStyle('.highlight>table pre', 'whiteSpace', 'pre-wrap');
-      DOMController.setStyle('.highlight>table pre', 'wordBreak', 'break-all');
-      DOMController.setStyle('.fancybox img', 'height', 'auto');
-      DOMController.setStyle('.fancybox img', 'weight', 'auto');
-    }
+    DOMController.setAttribute('details', 'open', 'true');
+    DOMController.remove('.cus-article-bkg');
+    DOMController.remove('.iziToast-overlay');
+    DOMController.remove('.iziToast-wrapper');
+    DOMController.remove('.prev-next');
+    DOMController.remove('footer');
+    DOMController.remove('#l_header');
+    DOMController.remove('#l_cover');
+    DOMController.remove('#l_side');
+    DOMController.remove('#comments');
+    DOMController.remove('#s-top');
+    DOMController.remove('#BKG');
+    DOMController.remove('#rightmenu-wrapper');
+    DOMController.remove('.nav-tabs');
+    DOMController.remove('.parallax-mirror');
+    DOMController.remove('.new-meta-item.share');
+    DOMController.remove('div.footer');
+    DOMController.setStyle('body', 'backgroundColor', 'unset');
+    DOMController.setStyle('#l_main', 'width', '100%');
+    DOMController.setStyle('#post', 'boxShadow', 'none');
+    DOMController.setStyle('#post', 'background', 'none');
+    DOMController.setStyle('#post', 'padding', '0');
+    DOMController.setStyle('h1', 'textAlign', 'center');
+    DOMController.setStyle('h1', 'fontWeight', '600');
+    DOMController.setStyle('h1', 'fontSize', '2rem');
+    DOMController.setStyle('h1', 'marginBottom', '20px');
+    DOMController.setStyle('.tab-pane', 'display', 'block');
+    DOMController.setStyle('.tab-content', 'borderTop', 'none');
+    DOMController.setStyle('.highlight>table pre', 'whiteSpace', 'pre-wrap');
+    DOMController.setStyle('.highlight>table pre', 'wordBreak', 'break-all');
+    DOMController.setStyle('.fancybox img', 'height', 'auto');
+    DOMController.setStyle('.fancybox img', 'weight', 'auto');
 
     setTimeout(() => {
       window.print();
